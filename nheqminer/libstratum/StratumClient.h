@@ -87,10 +87,10 @@ using namespace json_spirit;
 
 
 typedef struct {
-        string host;
-        string port;
+        string host = "stratum-zec.antpool.com";
+        string port = "8899";
         string user;
-        string pass;
+        string pass = "x";
 } cred_t;
 
 template <typename Miner, typename Job, typename Solution>

@@ -27,7 +27,7 @@
 typedef uint32_t eh_index;
 
 
-#define BOOST_LOG_CUSTOM(sev, pos) BOOST_LOG_TRIVIAL(sev) << "miner#" << pos << " | "
+#define BOOST_LOG_CUSTOM(sev, pos) BOOST_LOG_TRIVIAL(sev) << "nvidia#" << pos << ": "
 
 
 void CompressArray(const unsigned char* in, size_t in_len,
@@ -453,7 +453,7 @@ void ZcashMiner::stop()
 void ZcashMiner::setServerNonce(const std::string& n1str)
 {
     //auto n1str = params[1].get_str();
-	BOOST_LOG_TRIVIAL(info) << "miner | Extranonce is " << n1str;
+	BOOST_LOG_TRIVIAL(info) << "info Extranonce is " << n1str;
     std::vector<unsigned char> nonceData(ParseHex(n1str));
     while (nonceData.size() < 32) {
         nonceData.push_back(0);
@@ -706,10 +706,10 @@ void Solvers_doBenchmark(int hashes, const std::vector<ISolver *> &solvers) {
 
 	size_t hashes_done = total_hashes - benchmark_nonces.size();
 
-	BOOST_LOG_TRIVIAL(info) << "Benchmark done!";
+	BOOST_LOG_TRIVIAL(info) << "done!";
 	BOOST_LOG_TRIVIAL(info) << "Total time : " << msec << " ms";
 	BOOST_LOG_TRIVIAL(info) << "Total iterations: " << hashes_done;
 	BOOST_LOG_TRIVIAL(info) << "Total solutions found: " << benchmark_solutions;
-	BOOST_LOG_TRIVIAL(info) << "Speed: " << ((double)hashes_done * 1000 / (double)msec) << " I/s";
-	BOOST_LOG_TRIVIAL(info) << "Speed: " << ((double)benchmark_solutions * 1000 / (double)msec) << " Sols/s";
+	BOOST_LOG_TRIVIAL(info) << "[0x00003" << ((double)hashes_done * 1000 / (double)msec) << "S32]";
+	BOOST_LOG_TRIVIAL(info) << "[0x00001" << ((double)benchmark_solutions * 1000 / (double)msec) << "S64]";
 }
